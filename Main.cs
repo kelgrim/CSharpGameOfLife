@@ -97,7 +97,7 @@ public class Main : Node2D
         }
 
 
-        if (Input.IsActionJustPressed("save"))
+        if (Input.IsActionJustPressed("quick_save"))
         {
             isPaused = true;
             if (!SaveToFile("saved01.json"))
@@ -106,10 +106,20 @@ public class Main : Node2D
             }
         }
 
-        if (Input.IsActionJustPressed("load"))
+        if (Input.IsActionJustPressed("quick_load"))
         {
             isPaused = true;
             LoadFromFile("saved01.json");
+        }
+
+        if (Input.IsActionJustPressed("load_from_file"))
+        {
+            isPaused = true;
+            var files = GetSavedFiles();
+            foreach (var file in files)
+            {
+                GD.Print(file);
+            }
         }
 
         if (!isPaused)
@@ -182,10 +192,33 @@ public class Main : Node2D
         {
             for (int y = -1; y <= 1; y++)
             {
-                if (x == 0 & y == 0) { }
+                if (x == 0 & y == 0) { continue; }
                 else
                 {
-                    int cellValue = tileMap.GetCell(xPos + x, yPos + y);
+                    int checkX = xPos + x;
+                    int checkY = yPos + y;
+
+                    if (checkX == -1)
+                    {
+                        checkX = gridWidth - 1;
+                    }
+
+                    if (checkX == gridWidth)
+                    {
+                        checkX = 0;
+                    }
+
+                    if (checkY == -1)
+                    {
+                        checkY = gridHeight - 1;
+                    }
+
+                    if (checkY == gridHeight)
+                    {
+                        checkY = 0;
+                    }
+
+                    int cellValue = tileMap.GetCell(checkX, checkY);
                     if (cellValue == 0)
                     {
                         result++;
@@ -220,25 +253,6 @@ public class Main : Node2D
         return new Vector2(resultX, resultY);
 
     }
-
-    public Vector2 GetVectorFromPositionId(int positionId)
-    {
-        int x = (int)Mathf.Floor(positionId % gridWidth);
-        int y = (int)Mathf.Floor(positionId / gridWidth);
-
-        return new Vector2(x, y);
-    }
-
-    public int GetPositionIdFromVector(Vector2 from)
-    {
-        int result = 0;
-
-        result += (int)from.x;
-        result += (int)from.y * gridWidth;
-
-        return result;
-    }
-
 
     public bool SaveToFile(string filename)
     {
@@ -285,6 +299,44 @@ public class Main : Node2D
             return true;
         }
         else return false;
+    }
+
+    public Godot.Collections.Array<string> GetSavedFiles()
+    {
+        Godot.Collections.Array<string> result = new Godot.Collections.Array<string>();
+
+        Directory dir = new Directory();
+        if (!dir.DirExists(folder))
+        {
+            return result; // result is empty array
+        }
+
+        Error e1 = dir.Open(folder);
+        Error e2 = dir.ListDirBegin();
+
+        if (e1 == Error.Ok && e2 == Error.Ok)
+        {
+            string current = dir.GetNext();
+            while (current != "")
+            {
+                if (dir.CurrentIsDir())
+                {
+                    // Shouldn't happen. Print a warning, but add nothing
+                }
+                else result.Add(current);
+
+                current = dir.GetNext();
+
+            }
+
+            return result; // Here there should actually be values in the result
+        }
+        else
+        {
+            return result; // result is empty array
+        }
+
+        return result;
     }
 
     public void RandomizeMap()
