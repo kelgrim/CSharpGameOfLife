@@ -26,13 +26,24 @@ public class Main : Node2D
 
     string defaultLoad = "double_gliders.json";
 
-
     //Save Game params
     string folder = "res://saves/";
+
+
+    Control loadMenu;
+    Control saveMenu;
+    ItemList itemList;
 
     public override void _Ready()
     {
         tileMap = GetNode<TileMap>("TileMap");
+
+        loadMenu = GetNode<Control>("LoadMenu");
+        loadMenu.Visible = false;
+        itemList = loadMenu.GetNode<ItemList>("TextureRect/ItemList");
+
+        saveMenu = GetNode<Control>("SaveMenu");
+        saveMenu.Visible = false;
 
         gridWidth = screenWidth / cellSize;
         gridHeight = screenHeight / cellSize;
@@ -59,22 +70,28 @@ public class Main : Node2D
         {
             isPaused = true;
 
-            Vector2 position = GetGlobalMousePosition();
-            Vector2 gridPosition = GetGridPositionFromGlobalPosition(position);
+            if (!loadMenu.Visible && !saveMenu.Visible)
+            {
+                Vector2 position = GetGlobalMousePosition();
+                Vector2 gridPosition = GetGridPositionFromGlobalPosition(position);
 
-            tileMap.SetCell((int)gridPosition.x, (int)gridPosition.y, 0);
+                tileMap.SetCell((int)gridPosition.x, (int)gridPosition.y, 0);
 
-            UpdateCurrentCells();
+                UpdateCurrentCells();
+            }
         }
 
         if (Input.IsActionPressed("right_click"))
         {
-            isPaused = true;
-            Vector2 position = GetGlobalMousePosition();
-            Vector2 gridPosition = GetGridPositionFromGlobalPosition(position);
+            if (!loadMenu.Visible && !saveMenu.Visible)
+            {
+                isPaused = true;
+                Vector2 position = GetGlobalMousePosition();
+                Vector2 gridPosition = GetGridPositionFromGlobalPosition(position);
 
-            tileMap.SetCell((int)gridPosition.x, (int)gridPosition.y, 1);
-            UpdateCurrentCells();
+                tileMap.SetCell((int)gridPosition.x, (int)gridPosition.y, 1);
+                UpdateCurrentCells();
+            }
         }
 
         if (Input.IsActionJustPressed("randomize"))
@@ -93,14 +110,18 @@ public class Main : Node2D
 
         if (Input.IsActionJustPressed("pause_toggle"))
         {
-            isPaused = !isPaused;
+            if (!loadMenu.Visible && !saveMenu.Visible)
+            {
+                isPaused = !isPaused;
+            }
+            else isPaused = true;
         }
 
 
         if (Input.IsActionJustPressed("quick_save"))
         {
             isPaused = true;
-            if (!SaveToFile("saved01.json"))
+            if (!SaveToFile("quicksave.json"))
             {
                 GD.Print("Saving file failed");
             }
@@ -109,17 +130,36 @@ public class Main : Node2D
         if (Input.IsActionJustPressed("quick_load"))
         {
             isPaused = true;
-            LoadFromFile("saved01.json");
+            LoadFromFile("quicksave.json");
+        }
+
+        if (Input.IsActionJustPressed("save_to_file"))
+        {
+            if (!saveMenu.Visible)
+            {
+                saveMenu.Visible = true;
+            }
+            else saveMenu.Visible = false;
+
         }
 
         if (Input.IsActionJustPressed("load_from_file"))
         {
-            isPaused = true;
-            var files = GetSavedFiles();
-            foreach (var file in files)
+            if (!loadMenu.Visible)
             {
-                GD.Print(file);
+                isPaused = true;
+
+                itemList.Clear();
+                var savedFiles = GetSavedFiles();
+                foreach (var file in savedFiles)
+                {
+                    itemList.AddItem(file);
+                }
+                loadMenu.Visible = true;
             }
+
+            else loadMenu.Visible = false;
+
         }
 
         if (!isPaused)
@@ -269,7 +309,6 @@ public class Main : Node2D
             String fileContent = JsonConvert.SerializeObject(this);
             file.StoreString(fileContent);
             file.Close();
-            GD.Print("saved");
             return true;
         }
         else
@@ -336,7 +375,6 @@ public class Main : Node2D
             return result; // result is empty array
         }
 
-        return result;
     }
 
     public void RandomizeMap()
@@ -376,5 +414,39 @@ public class Main : Node2D
                 tileMap.SetCell(x, y, 1);
             }
         }
+    }
+
+    public void _on_TextureButton_button_up()
+    {
+        if (itemList.IsAnythingSelected())
+        {
+            int[] indices = itemList.GetSelectedItems();
+            if (indices.Length > 0)
+            {
+                string fileText = itemList.GetItemText(indices[0]);
+                bool isLoaded = LoadFromFile(fileText);
+                if (isLoaded)
+                {
+                    UpdateCurrentCells();
+                    loadMenu.Visible = false;
+                }
+                else GD.Print("WARNING - ILLEGAL FILE LOADED");
+
+            }
+
+        }
+    }
+
+    public void _on_SaveButton_button_up()
+    {
+        var textBox = GetNode<TextEdit>("SaveMenu/TextureRect/TextEdit");
+        string file = textBox.Text;
+        if (file != null && file != "")
+        {
+            SaveToFile(file + ".json");
+            saveMenu.Visible = false;
+        }
+
+
     }
 }

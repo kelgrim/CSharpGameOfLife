@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/living_dead.png-9cfaf45dbfab23178c0a7cd284b04a9a.stex"
+path="res://.import/UIbg.png-50fcd56a57731152b3446e9d0c07e8d2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://living_dead.png"
-dest_files=[ "res://.import/living_dead.png-9cfaf45dbfab23178c0a7cd284b04a9a.stex" ]
+source_file="res://textures/UIbg.png"
+dest_files=[ "res://.import/UIbg.png-50fcd56a57731152b3446e9d0c07e8d2.stex" ]
 
 [params]
 
