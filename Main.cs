@@ -43,13 +43,8 @@ public class Main : Node2D
 
         if (defaultLoad == null)
         {
-            for (int x = 0; x < gridWidth; x++)
-            {
-                for (int y = 0; y < gridHeight; y++)
-                {
-                    tileMap.SetCell(x, y, 1);
-                }
-            }
+            ClearMap();
+            UpdateCurrentCells();
         }
         else
         {
@@ -86,6 +81,13 @@ public class Main : Node2D
         {
             isPaused = true;
             RandomizeMap();
+            UpdateCurrentCells();
+        }
+
+        if (Input.IsActionJustPressed("clear_screen"))
+        {
+            isPaused = true;
+            ClearMap();
             UpdateCurrentCells();
         }
 
@@ -291,6 +293,7 @@ public class Main : Node2D
         RandomizeMap(usedSeed);
     }
 
+
     public void RandomizeMap(int seed)
     {
         //GD.Randomize();
@@ -307,6 +310,18 @@ public class Main : Node2D
                     tileMap.SetCell(x, y, 0);
                 }
                 else tileMap.SetCell(x, y, 1);
+            }
+        }
+    }
+
+
+    public void ClearMap()
+    {
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                tileMap.SetCell(x, y, 1);
             }
         }
     }
