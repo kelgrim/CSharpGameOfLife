@@ -127,6 +127,7 @@ align = 1
 valign = 1
 
 [node name="SaveMenu" type="Control" parent="."]
+visible = false
 margin_right = 1929.0
 margin_bottom = 1078.0
 __meta__ = {
