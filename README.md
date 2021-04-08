@@ -18,3 +18,20 @@ To use the program:
 - Click anywhere with right button make that cell 'dead'
 
 
+See below for some of the examples of what the program can generate:
+
+Blinker puffer initial state:
+
+![Blinker Puffer](https://github.com/kelgrim/CSharpGameOfLife/blob/master/example_output/blinker_puffer_1.png)
+
+Blinker Puffer in action:
+
+![Blinker Puffer 2](https://github.com/kelgrim/CSharpGameOfLife/blob/master/example_output/blinker_puffer_2.png)
+
+glider guns initial:
+
+![Glider gun 1](https://github.com/kelgrim/CSharpGameOfLife/blob/master/example_output/doublge_gliders1.png)
+
+glider guns in action:
+
+![Glider gun 2](https://github.com/kelgrim/CSharpGameOfLife/blob/master/example_output/double_gliders2.png)
